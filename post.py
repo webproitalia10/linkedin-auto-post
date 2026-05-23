@@ -1,4 +1,4 @@
-from google import genai
+from groq import Groq
 import urllib.request
 import urllib.parse
 import json
@@ -20,7 +20,7 @@ THEMES = [
 
 
 def generate_post(theme):
-    client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
+    client = Groq(api_key=os.environ["GROQ_API_KEY"])
 
     prompt = f"""Sei un esperto di marketing e comunicazione con 15 anni di esperienza che pubblica contenuti su LinkedIn.
 
@@ -38,11 +38,12 @@ Regole OBBLIGATORIE:
 
 Scrivi SOLO il testo del post."""
 
-    response = client.models.generate_content(
-        model="gemini-2.0-flash-lite",
-        contents=prompt
+    response = client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=1024
     )
-    return response.text.strip()
+    return response.choices[0].message.content.strip()
 
 
 def post_to_linkedin(text, access_token, author_urn):

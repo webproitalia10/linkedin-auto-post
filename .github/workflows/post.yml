@@ -18,11 +18,11 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: pip install google-genai
+        run: pip install groq
 
       - name: Generate and post to LinkedIn
         env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           LINKEDIN_ACCESS_TOKEN: ${{ secrets.LINKEDIN_ACCESS_TOKEN }}
           LINKEDIN_AUTHOR_URN: ${{ secrets.LINKEDIN_AUTHOR_URN }}
         run: python post.py
