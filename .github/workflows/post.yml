@@ -1,0 +1,28 @@
+name: Daily LinkedIn Post
+
+on:
+  schedule:
+    - cron: '0 8 * * *'  # Ogni giorno alle 9:00 ora italiana (8 UTC)
+  workflow_dispatch:       # Permette di avviarlo manualmente per testare
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install google-generativeai
+
+      - name: Generate and post to LinkedIn
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          LINKEDIN_ACCESS_TOKEN: ${{ secrets.LINKEDIN_ACCESS_TOKEN }}
+          LINKEDIN_AUTHOR_URN: ${{ secrets.LINKEDIN_AUTHOR_URN }}
+        run: python post.py

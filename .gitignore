@@ -1,0 +1,4 @@
+run_get_token.sh
+__pycache__/
+*.pyc
+.env
