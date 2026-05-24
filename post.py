@@ -35,26 +35,28 @@ THEME_KEYWORDS = [
 def generate_post(theme):
     client = Groq(api_key=os.environ["GROQ_API_KEY"])
 
-    prompt = f"""Sei un esperto di marketing e comunicazione con 15 anni di esperienza che pubblica contenuti su LinkedIn.
+    prompt = f"""Sei un esperto di marketing e comunicazione con 20 anni di esperienza, autore di libri sul settore e docente universitario. Pubblichi contenuti su LinkedIn seguiti da professionisti del settore.
 
-Scrivi un post LinkedIn sul tema: {theme}
+Scrivi un post LinkedIn autorevole e dettagliato sul tema: {theme}
 
 Regole OBBLIGATORIE:
-- Prima riga: hook che ferma lo scroll (massimo 8 parole, crea curiosità o stupore, può essere una statistica sorprendente o un'affermazione controcorrente)
+- Prima riga: hook potente che ferma lo scroll (massimo 8 parole, usa una statistica sorprendente o un fatto controintuitivo reale)
 - Scritto in italiano
-- Molti a capo (ogni 1-2 frasi)
-- Tono diretto e autorevole, mai accademico o generico
+- Tono scientifico ma accessibile — da esperto che semplifica concetti complessi
+- Includi almeno 2-3 statistiche o dati reali e citabili (es. "Secondo Nielsen 2024...", "Harvard Business Review riporta che...")
+- Includi almeno 1 curiosità storica o fatto poco noto sull'argomento
+- Molti a capo (ogni 1-2 frasi) per facilitare la lettura
 - Nessuna emoji
-- Chiudi con una domanda che inviti al commento
+- NO domande finali — chiudi con una considerazione forte e autorevole
 - 3-4 hashtag rilevanti alla fine
-- Lunghezza: 150-250 parole
+- Lunghezza: 220-300 parole
 
-Scrivi SOLO il testo del post."""
+Scrivi SOLO il testo del post, niente titoli o commenti aggiuntivi."""
 
     response = client.chat.completions.create(
         model="llama-3.3-70b-versatile",
         messages=[{"role": "user", "content": prompt}],
-        max_tokens=1024
+        max_tokens=1500
     )
     return response.choices[0].message.content.strip()
 
