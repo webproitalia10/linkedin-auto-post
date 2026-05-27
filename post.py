@@ -43,7 +43,7 @@ Regole OBBLIGATORIE:
 - Prima riga: hook potente che ferma lo scroll (massimo 8 parole, usa una statistica sorprendente o un fatto controintuitivo reale)
 - Scritto in italiano
 - Tono scientifico ma accessibile — da esperto che semplifica concetti complessi
-- Includi almeno 2-3 statistiche o dati reali e citabili (es. "Secondo Nielsen 2024...", "Harvard Business Review riporta che...")
+- Includi almeno 2-3 statistiche o dati reali con fonti variate e credibili (es. Harvard Business Review, McKinsey, Forrester, Gartner, Statista, Edelman, WARC, Ipsos, studi universitari, dati aziendali pubblici). NON citare sempre Nielsen — varia le fonti ad ogni post.
 - Includi almeno 1 curiosità storica o fatto poco noto sull'argomento
 - Molti a capo (ogni 1-2 frasi) per facilitare la lettura
 - Nessuna emoji
