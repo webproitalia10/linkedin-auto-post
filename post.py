@@ -3,6 +3,7 @@ import urllib.request
 import urllib.parse
 import json
 import os
+import random
 from datetime import datetime
 
 THEMES = [
@@ -67,7 +68,8 @@ def get_unsplash_photo(keyword):
         return None
 
     query = urllib.parse.quote(keyword)
-    url = f"https://api.unsplash.com/search/photos?query={query}&per_page=1&orientation=landscape&client_id={access_key}"
+    page = random.randint(1, 5)
+    url = f"https://api.unsplash.com/search/photos?query={query}&per_page=10&page={page}&orientation=landscape&client_id={access_key}"
 
     try:
         req = urllib.request.Request(url)
@@ -75,7 +77,8 @@ def get_unsplash_photo(keyword):
         with urllib.request.urlopen(req) as response:
             data = json.loads(response.read())
             if data["results"]:
-                photo_url = data["results"][0]["urls"]["regular"]
+                photo = random.choice(data["results"])
+                photo_url = photo["urls"]["regular"]
                 with urllib.request.urlopen(photo_url) as photo_response:
                     return photo_response.read()
     except Exception as e:
