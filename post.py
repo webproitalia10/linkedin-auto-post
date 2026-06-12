@@ -1,58 +1,86 @@
 from groq import Groq
 import urllib.request
 import urllib.parse
+import urllib.error
+import xml.etree.ElementTree as ET
 import json
 import os
 import random
+import re
 from datetime import datetime
 
-THEMES = [
-    "caso storico famoso di marketing (scegli tra: Nike Just Do It, Apple 1984, Dove Real Beauty, Volkswagen Think Small, Red Bull Stratos, Old Spice, Airbnb, o altri casi celebri). Racconta la storia in modo coinvolgente con dati reali.",
-    "importanza strategica del marketing per il successo di un'azienda o professionista. Usa un esempio concreto.",
-    "come i brand stanno comunicando su temi contemporanei (sostenibilità, inclusione, AI, o altro tema attuale). Prendi una posizione chiara.",
+RSS_FEEDS = [
+    "https://feeds.reuters.com/reuters/businessNews",
+    "https://rss.nytimes.com/services/xml/rss/nyt/Business.xml",
+    "http://feeds.bbci.co.uk/news/business/rss.xml",
+    "https://www.corriere.it/rss/economia.xml",
+    "https://www.ilsole24ore.com/rss/economia--finanza.xml",
+    "https://feeds.feedburner.com/fastcompany/headlines",
+    "https://www.wired.com/feed/rss",
+]
+
+FALLBACK_THEMES = [
+    "come i brand stanno comunicando su temi contemporanei. Prendi una posizione chiara.",
     "intelligenza artificiale e il suo impatto concreto sul marketing e la comunicazione oggi.",
-    "storytelling: una tecnica o principio specifico per comunicare in modo più efficace, con esempio pratico.",
-    "psicologia del consumatore: un bias cognitivo o leva emotiva specifica e come influenza le decisioni d'acquisto.",
-    "personal branding: un consiglio concreto e non ovvio per costruire autorevolezza su LinkedIn.",
-    "un errore comune e costoso nel marketing o nella comunicazione, con la soluzione.",
-    "come bilanciare dati e creatività nelle decisioni di marketing. Usa un caso reale.",
-    "il futuro della comunicazione digitale: una tendenza concreta che cambierà il settore nei prossimi 2 anni.",
-]
-
-THEME_KEYWORDS = [
-    "advertising brand history",
-    "business marketing strategy",
-    "brand communication modern",
-    "artificial intelligence technology",
-    "storytelling communication",
-    "consumer psychology behavior",
-    "personal branding linkedin",
-    "marketing mistake business",
-    "data creativity analytics",
-    "digital future communication",
+    "storytelling: una tecnica specifica per comunicare in modo più efficace, con esempio pratico.",
+    "psicologia del consumatore: un bias cognitivo specifico e come influenza le decisioni d'acquisto.",
+    "personal branding: un consiglio concreto per costruire autorevolezza su LinkedIn.",
 ]
 
 
-def generate_post(theme):
+def get_todays_news():
+    feeds = RSS_FEEDS.copy()
+    random.shuffle(feeds)
+
+    for feed_url in feeds:
+        try:
+            req = urllib.request.Request(feed_url)
+            req.add_header("User-Agent", "Mozilla/5.0")
+            with urllib.request.urlopen(req, timeout=10) as response:
+                content = response.read()
+
+            root = ET.fromstring(content)
+            items = root.findall(".//item")
+
+            if items:
+                item = random.choice(items[:8])
+                title = item.findtext("title", "").strip()
+                description = item.findtext("description", "").strip()
+                description = re.sub(r"<[^>]+>", "", description)[:600]
+                if title:
+                    print(f"Notizia trovata: {title[:80]}")
+                    return title, description
+        except Exception as e:
+            print(f"Feed non disponibile ({feed_url[:40]}...): {e}")
+            continue
+
+    return None, None
+
+
+def generate_post_from_news(title, description):
     client = Groq(api_key=os.environ["GROQ_API_KEY"])
 
-    prompt = f"""Sei un esperto di marketing e comunicazione con 20 anni di esperienza, autore di libri sul settore e docente universitario. Pubblichi contenuti su LinkedIn seguiti da professionisti del settore.
+    prompt = f"""Sei un esperto di marketing e comunicazione con 20 anni di esperienza, autore e docente universitario. Pubblichi contenuti su LinkedIn seguiti da professionisti del settore.
 
-Scrivi un post LinkedIn autorevole e dettagliato sul tema: {theme}
+La notizia di oggi è:
+TITOLO: {title}
+DETTAGLIO: {description}
+
+Scrivi un post LinkedIn che parte da questa notizia e la collega al mondo del marketing e della comunicazione.
 
 Regole OBBLIGATORIE:
-- Prima riga: hook potente che ferma lo scroll (massimo 8 parole, usa una statistica sorprendente o un fatto controintuitivo reale)
+- Prima riga: hook potente che ferma lo scroll partendo dalla notizia (massimo 8 parole)
 - Scritto in italiano
-- Tono scientifico ma accessibile — da esperto che semplifica concetti complessi
-- Includi almeno 2-3 statistiche o dati reali con fonti variate e credibili (es. Harvard Business Review, McKinsey, Forrester, Gartner, Statista, Edelman, WARC, Ipsos, studi universitari, dati aziendali pubblici). NON citare sempre Nielsen — varia le fonti ad ogni post.
-- Includi almeno 1 curiosità storica o fatto poco noto sull'argomento
-- Molti a capo (ogni 1-2 frasi) per facilitare la lettura
+- Tono critico e costruttivo — analisi professionale, non sensazionalismo
+- Collega la notizia a dinamiche reali di marketing, comunicazione o comportamento dei brand
+- Includi 2-3 dati o statistiche reali con fonti variate (McKinsey, Harvard Business Review, Gartner, Forrester, Edelman, Statista, Ipsos — NON usare sempre Nielsen)
+- Molti a capo (ogni 1-2 frasi)
 - Nessuna emoji
 - NO domande finali — chiudi con una considerazione forte e autorevole
-- 3-4 hashtag rilevanti alla fine
+- 3-4 hashtag pertinenti alla notizia e al marketing
 - Lunghezza: 220-300 parole
 
-Scrivi SOLO il testo del post, niente titoli o commenti aggiuntivi."""
+Scrivi SOLO il testo del post."""
 
     response = client.chat.completions.create(
         model="llama-3.3-70b-versatile",
@@ -60,6 +88,42 @@ Scrivi SOLO il testo del post, niente titoli o commenti aggiuntivi."""
         max_tokens=1500
     )
     return response.choices[0].message.content.strip()
+
+
+def generate_post_fallback():
+    client = Groq(api_key=os.environ["GROQ_API_KEY"])
+    theme = random.choice(FALLBACK_THEMES)
+
+    prompt = f"""Sei un esperto di marketing e comunicazione con 20 anni di esperienza, autore e docente universitario.
+
+Scrivi un post LinkedIn autorevole sul tema: {theme}
+
+Regole OBBLIGATORIE:
+- Prima riga: hook potente (massimo 8 parole, statistica sorprendente o fatto controintuitivo)
+- Scritto in italiano
+- Tono critico e costruttivo
+- 2-3 statistiche reali con fonti variate (NON usare sempre Nielsen)
+- Molti a capo
+- Nessuna emoji
+- NO domande finali — chiudi con una considerazione forte
+- 3-4 hashtag rilevanti
+- Lunghezza: 220-300 parole
+
+Scrivi SOLO il testo del post."""
+
+    response = client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=1500
+    )
+    return response.choices[0].message.content.strip()
+
+
+def extract_image_keyword(title):
+    stopwords = {"il","la","lo","le","gli","i","un","una","di","da","in","con","su","per","tra","fra","che","e","è","a","al","del","della","delle","dei","degli","nel","nella"}
+    words = re.findall(r'\b[a-zA-Z]{4,}\b', title.lower())
+    keywords = [w for w in words if w not in stopwords]
+    return " ".join(keywords[:3]) if keywords else "business news"
 
 
 def get_unsplash_photo(keyword):
@@ -87,7 +151,6 @@ def get_unsplash_photo(keyword):
 
 
 def upload_image_to_linkedin(image_data, access_token, author_urn):
-    # Step 1: registra l'upload
     register_url = "https://api.linkedin.com/v2/assets?action=registerUpload"
     register_payload = json.dumps({
         "registerUploadRequest": {
@@ -111,7 +174,6 @@ def upload_image_to_linkedin(image_data, access_token, author_urn):
     upload_url = register_data["value"]["uploadMechanism"]["com.linkedin.digitalmedia.uploading.MediaUploadHttpRequest"]["uploadUrl"]
     asset_urn = register_data["value"]["asset"]
 
-    # Step 2: carica l'immagine
     upload_req = urllib.request.Request(upload_url, data=image_data, method="PUT")
     upload_req.add_header("Authorization", f"Bearer {access_token}")
     upload_req.add_header("Content-Type", "image/jpeg")
@@ -164,22 +226,24 @@ def post_to_linkedin(text, access_token, author_urn, asset_urn=None):
         return e.code, e.read()
 
 
-def get_todays_theme():
-    day = datetime.now().timetuple().tm_yday
-    return THEMES[day % len(THEMES)], THEME_KEYWORDS[day % len(THEME_KEYWORDS)]
-
-
 if __name__ == "__main__":
-    theme, keyword = get_todays_theme()
-    print(f"Tema: {theme[:60]}...")
-
-    post_text = generate_post(theme)
-    print(f"\nPost generato:\n{post_text}\n")
-
     access_token = os.environ["LINKEDIN_ACCESS_TOKEN"]
     author_urn = os.environ["LINKEDIN_AUTHOR_URN"]
 
-    # Cerca foto su Unsplash
+    # Cerca notizia del giorno
+    title, description = get_todays_news()
+
+    if title:
+        post_text = generate_post_from_news(title, description)
+        keyword = extract_image_keyword(title)
+    else:
+        print("Nessuna notizia trovata — uso tema di fallback")
+        post_text = generate_post_fallback()
+        keyword = "business marketing"
+
+    print(f"\nPost generato:\n{post_text}\n")
+
+    # Foto Unsplash
     asset_urn = None
     print(f"Cerco foto per: {keyword}")
     image_data = get_unsplash_photo(keyword)
