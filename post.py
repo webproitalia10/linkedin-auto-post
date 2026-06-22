@@ -69,8 +69,9 @@ DETTAGLIO: {description}
 Scrivi un post LinkedIn breve e provocatorio che parte da questa notizia.
 
 Regole OBBLIGATORIE:
-- Prima riga: hook che spacca (massimo 6 parole, afferma qualcosa di scomodo o controcorrente — non una domanda)
-- Scritto in italiano, tono diretto e umano — come se stessi parlando a un collega davanti a un caffè
+- PRIMA RIGA (il gancio): è la cosa più importante del post. Deve fermare lo scroll. Massimo 6 parole. Deve essere un'affermazione secca, scomoda, controcorrente o sorprendente. NON una domanda. Esempi di hook forti: "Il tuo brand parla. Nessuno ascolta.", "La trasparenza non paga. Paga la storia.", "Il 90% dei lanci fallisce per questo."
+- Seconda riga: lasciala vuota (a capo)
+- Poi sviluppa il post in modo diretto e umano — come se stessi parlando a un collega davanti a un caffè
 - Prendi una posizione netta, anche impopolare — il post deve generare reazioni e commenti
 - VIETATO usare: "secondo gli studi", "la ricerca dimostra", "è fondamentale", "in conclusione", "è essenziale che", "risulta evidente"
 - Se citi un dato, integralo nel discorso in modo naturale, non da report
@@ -99,8 +100,9 @@ def generate_post_fallback():
 Scrivi un post LinkedIn breve e provocatorio sul tema: {theme}
 
 Regole OBBLIGATORIE:
-- Prima riga: hook che spacca (massimo 6 parole, afferma qualcosa di scomodo o controcorrente — non una domanda)
-- Scritto in italiano, tono diretto e umano — come se stessi parlando a un collega davanti a un caffè
+- PRIMA RIGA (il gancio): è la cosa più importante del post. Deve fermare lo scroll. Massimo 6 parole. Deve essere un'affermazione secca, scomoda, controcorrente o sorprendente. NON una domanda. Esempi di hook forti: "Il tuo brand parla. Nessuno ascolta.", "La trasparenza non paga. Paga la storia.", "Il 90% dei lanci fallisce per questo."
+- Seconda riga: lasciala vuota (a capo)
+- Poi sviluppa il post in modo diretto e umano — come se stessi parlando a un collega davanti a un caffè
 - Prendi una posizione netta, anche impopolare — il post deve generare reazioni e commenti
 - VIETATO usare: "secondo gli studi", "la ricerca dimostra", "è fondamentale", "in conclusione", "è essenziale che", "risulta evidente"
 - Se citi un dato, integralo nel discorso in modo naturale, non da report
