@@ -60,25 +60,25 @@ def get_todays_news():
 def generate_post_from_news(title, description):
     client = Groq(api_key=os.environ["GROQ_API_KEY"])
 
-    prompt = f"""Sei un esperto di marketing e comunicazione con 20 anni di esperienza, autore e docente universitario. Pubblichi contenuti su LinkedIn seguiti da professionisti del settore.
+    prompt = f"""Sei un professionista di marketing e comunicazione con una voce diretta e scomoda su LinkedIn. Non sei un professore, sei un praticante.
 
 La notizia di oggi è:
 TITOLO: {title}
 DETTAGLIO: {description}
 
-Scrivi un post LinkedIn che parte da questa notizia e la collega al mondo del marketing e della comunicazione.
+Scrivi un post LinkedIn breve e provocatorio che parte da questa notizia.
 
 Regole OBBLIGATORIE:
-- Prima riga: hook potente che ferma lo scroll partendo dalla notizia (massimo 8 parole)
-- Scritto in italiano
-- Tono critico e costruttivo — analisi professionale, non sensazionalismo
-- Collega la notizia a dinamiche reali di marketing, comunicazione o comportamento dei brand
-- Includi 2-3 dati o statistiche reali con fonti variate (McKinsey, Harvard Business Review, Gartner, Forrester, Edelman, Statista, Ipsos — NON usare sempre Nielsen)
+- Prima riga: hook che spacca (massimo 6 parole, afferma qualcosa di scomodo o controcorrente — non una domanda)
+- Scritto in italiano, tono diretto e umano — come se stessi parlando a un collega davanti a un caffè
+- Prendi una posizione netta, anche impopolare — il post deve generare reazioni e commenti
+- VIETATO usare: "secondo gli studi", "la ricerca dimostra", "è fondamentale", "in conclusione", "è essenziale che", "risulta evidente"
+- Se citi un dato, integralo nel discorso in modo naturale, non da report
 - Molti a capo (ogni 1-2 frasi)
 - Nessuna emoji
-- NO domande finali — chiudi con una considerazione forte e autorevole
-- 3-4 hashtag pertinenti alla notizia e al marketing
-- Lunghezza: 220-300 parole
+- NO domande finali — chiudi con una provocazione o un'affermazione forte che fa pensare
+- 6-8 hashtag rilevanti (mix marketing, comunicazione, attualità, settore)
+- Lunghezza: 120-170 parole (corto e incisivo, non di più)
 
 Scrivi SOLO il testo del post."""
 
@@ -94,20 +94,21 @@ def generate_post_fallback():
     client = Groq(api_key=os.environ["GROQ_API_KEY"])
     theme = random.choice(FALLBACK_THEMES)
 
-    prompt = f"""Sei un esperto di marketing e comunicazione con 20 anni di esperienza, autore e docente universitario.
+    prompt = f"""Sei un professionista di marketing e comunicazione con una voce diretta e scomoda su LinkedIn. Non sei un professore, sei un praticante.
 
-Scrivi un post LinkedIn autorevole sul tema: {theme}
+Scrivi un post LinkedIn breve e provocatorio sul tema: {theme}
 
 Regole OBBLIGATORIE:
-- Prima riga: hook potente (massimo 8 parole, statistica sorprendente o fatto controintuitivo)
-- Scritto in italiano
-- Tono critico e costruttivo
-- 2-3 statistiche reali con fonti variate (NON usare sempre Nielsen)
+- Prima riga: hook che spacca (massimo 6 parole, afferma qualcosa di scomodo o controcorrente — non una domanda)
+- Scritto in italiano, tono diretto e umano — come se stessi parlando a un collega davanti a un caffè
+- Prendi una posizione netta, anche impopolare — il post deve generare reazioni e commenti
+- VIETATO usare: "secondo gli studi", "la ricerca dimostra", "è fondamentale", "in conclusione", "è essenziale che", "risulta evidente"
+- Se citi un dato, integralo nel discorso in modo naturale, non da report
 - Molti a capo
 - Nessuna emoji
-- NO domande finali — chiudi con una considerazione forte
-- 3-4 hashtag rilevanti
-- Lunghezza: 220-300 parole
+- NO domande finali — chiudi con una provocazione o un'affermazione forte che fa pensare
+- 6-8 hashtag rilevanti (mix marketing, comunicazione, attualità, settore)
+- Lunghezza: 120-170 parole (corto e incisivo, non di più)
 
 Scrivi SOLO il testo del post."""
 
